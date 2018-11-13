@@ -9,8 +9,26 @@
                 <el-tab-pane label="问答" name="fourth"></el-tab-pane>
             </el-tabs>
             <div class="content-main">
-                <el-table>
-                </el-table>
+                <div class="topic-list">
+                    <div class="cell">
+                        <router-link :to="{name: 'infomation'}" class="cell-head">
+                            <img src="../assets/xbx.jpg" alt="">
+                        </router-link>
+                        <router-link :to="{name: 'posts'}" class="cell-title">
+                            沙发斯蒂芬三个大人供热无法
+                        </router-link>
+                        <span class="cell-day">3天前</span>
+                    </div>
+                    <div class="cell">
+                        <router-link :to="{name: 'infomation'}" class="cell-head">
+                            <img src="../assets/xbx.jpg" alt="">
+                        </router-link>
+                        <router-link :to="{name: 'posts',query: {id : status}}" class="cell-title">
+                            沙发斯蒂芬三个大人供热无法
+                        </router-link>
+                        <span class="cell-day">3天前</span>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="side">
@@ -24,12 +42,12 @@
                     </p>
                 </div>
                 <div class="isLogin" v-show="isShow">
-                    <div class="user">
-                        <img src="" alt="">
-                        wangxiaobao
-                    </div>
+                    <router-link class="user" :to="{name:'infomation'}">
+                        <img src="../assets/xbx.jpg" alt="">
+                    </router-link>
+                    <span>&nbsp; wangxiaobao</span>
                     <p>积分:0</p>
-                    <el-button type="success"><router-link :to="{name: 'publish'}">发表话题</router-link></el-button>
+                    <el-button type="success"><router-link :to="{name: 'publish'}">发布话题</router-link></el-button>
                 </div>
             </div>
             <div class="scoreboard">
@@ -48,7 +66,8 @@ export default {
   data () {
     return {
       activeName: 'first',
-      isShow: true,
+      isShow: this.$store.state.isLogin,
+      status: 123,
       data: [
         {
           score: 100,
@@ -75,8 +94,41 @@ export default {
             position: relative;
             left: 10%;
             top: 80px;
-            background-color: aliceblue;
+            background-color: #fff;
             padding: 20px;
+        }
+        .content-main {
+            .topic-list {
+                .cell {
+                    width: 100%;
+                    height: 38px;
+                    border-bottom: 1px solid #f0f0f0;
+                    padding: 10px 5px 0 5px;
+                    .cell-head {
+                        float: left;
+                        img {
+                            width: 30px;
+                            height: 30px;
+                            border-radius: 3px;
+                        }
+                    }
+                    .cell-title {
+                        /* margin-top: 10px; */
+                        padding-top: 10px;
+                        text-decoration: none;
+                        color: #42b983;
+                    }
+                    .cell-title:hover {
+                        text-decoration: underline;
+                    }
+                    .cell-day {
+                        float: right;
+                    }
+                }
+                .cell:hover {
+                    background-color: #f9f9f9;
+                }
+            }
         }
         .side {
             position: absolute;
@@ -99,6 +151,13 @@ export default {
                     a {
                         text-decoration: none;
                         color: #fff;
+                    }
+                    .user {
+                        img {
+                            width: 48px;
+                            height: 48px;
+                            vertical-align: middle;
+                        }
                     }
                 }
             }

@@ -29,6 +29,16 @@ export default new Router({
       path: '/publish',
       name: 'publish',
       component: () => import('./views/Publish.vue')
+    },
+    {
+      path: '/posts',
+      name: 'posts',
+      component: () => import('./views/Posts.vue')
+    },
+    {
+      path: '/infomation',
+      name: 'infomation',
+      component: () => import('./views/Infomation.vue')
     }
   ]
 })

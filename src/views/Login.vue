@@ -46,7 +46,7 @@ export default {
     .login {
         .login-main {
             background-color: #fff;
-            width: 20%;
+            width: 350px;
             margin: 150px auto;
             padding: 40px 40px 20px 0px;
             /* border: 1px solid black; */

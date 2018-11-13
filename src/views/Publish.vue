@@ -15,13 +15,13 @@
             <p>
                 <el-input v-model="input" placeholder="请输入标题"></el-input>
             </p>
-            <v-vueQuillEditor></v-vueQuillEditor>
+            <mavon-editor v-model="value" :subfield = false :defaultOpen= manner></mavon-editor>
+            <el-button type="primary" @click="getContent()">提交</el-button>
         </div>
     </div>
 </template>
 
 <script>
-import vueQuillEditor from '../components/VueQuillEditor.vue'
 export default {
   data () {
     return {
@@ -42,13 +42,17 @@ export default {
         label: '北京烤鸭'
       }],
       value: '',
-      input: ''
+      input: '',
+      content: '',
+      manner: 'edit'
     }
   },
-  components: {
-    'v-vueQuillEditor': vueQuillEditor
-  },
-  methods: {}
+  methods: {
+    getContent () {
+      console.log(this.value)
+      this.content = this.value
+    }
+  }
 }
 </script>
 
@@ -66,6 +70,9 @@ export default {
                 .ql-container {
                     height: 300px !important;
                 }
+            }
+            .el-button--primary {
+                margin-top: 20px;
             }
         }
     }
