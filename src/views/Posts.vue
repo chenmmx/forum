@@ -7,7 +7,7 @@
             </div>
             <mavon-editor
                 class="md"
-                :value="value"
+                :value="content"
                 :subfield = "prop.subfield"
                 :defaultOpen = "prop.defaultOpen"
                 :toolbarsFlag = "false"
@@ -19,7 +19,7 @@
             <div class="side-person">
                 <h3>作者信息</h3>
                 <div class="isLogin">
-                    <router-link class="user" :to="{name:'infomation'}">
+                    <router-link class="user" :to="{name:'user'}">
                         <img src="../assets/xbx.jpg" alt="">
                     </router-link>
                     <span>&nbsp; wangxiaobao</span>
@@ -36,7 +36,7 @@
 export default {
   data () {
     return {
-      value: ``
+      content: ``
     }
   },
   computed: {
@@ -64,7 +64,7 @@ export default {
             .posts-content-title {
                 width: 100%;
                 height: 40px;
-                /* border: 1px solid black; */
+                border-radius: 3px;
                 background-color: #fff;
                 padding-bottom: 10px;
                 /* padding-top: px; */
@@ -72,6 +72,9 @@ export default {
                 h3 {
                     padding-top: 15px;
                 }
+            }
+            .md {
+                border-radius: 3px;
             }
         }
         .side {
@@ -81,6 +84,7 @@ export default {
             right: 10%;
             height: 800px;
             .side-person {
+                border-radius: 3px;
                 padding: 10px;
                 background-color: #fff;
                 width: 100%;
@@ -94,6 +98,7 @@ export default {
                         img {
                             width: 48px;
                             height: 48px;
+                            border-radius: 4px;
                             vertical-align: middle;
                         }
                     }

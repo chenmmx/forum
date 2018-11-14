@@ -15,7 +15,7 @@
             <p>
                 <el-input v-model="input" placeholder="请输入标题"></el-input>
             </p>
-            <mavon-editor v-model="value" :subfield = false :defaultOpen= manner></mavon-editor>
+            <mavon-editor v-model="content" :subfield = false :defaultOpen= manner></mavon-editor>
             <el-button type="primary" @click="getContent()">提交</el-button>
         </div>
     </div>
@@ -49,8 +49,7 @@ export default {
   },
   methods: {
     getContent () {
-      console.log(this.value)
-      this.content = this.value
+      console.log(this.content)
     }
   }
 }

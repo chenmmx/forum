@@ -6,7 +6,8 @@
 
 <style lang="less">
 body {
-  background-color: #e1e1e1;
+    background: url("./assets/bg.jpg") fixed 0 center;
+    background-size: cover;
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

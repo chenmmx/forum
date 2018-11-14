@@ -11,7 +11,7 @@
             <div class="content-main">
                 <div class="topic-list">
                     <div class="cell">
-                        <router-link :to="{name: 'infomation'}" class="cell-head">
+                        <router-link :to="{name: 'user'}" class="cell-head">
                             <img src="../assets/xbx.jpg" alt="">
                         </router-link>
                         <router-link :to="{name: 'posts'}" class="cell-title">
@@ -20,7 +20,7 @@
                         <span class="cell-day">3天前</span>
                     </div>
                     <div class="cell">
-                        <router-link :to="{name: 'infomation'}" class="cell-head">
+                        <router-link :to="{name: 'user'}" class="cell-head">
                             <img src="../assets/xbx.jpg" alt="">
                         </router-link>
                         <router-link :to="{name: 'posts',query: {id : status}}" class="cell-title">
@@ -42,7 +42,7 @@
                     </p>
                 </div>
                 <div class="isLogin" v-show="isShow">
-                    <router-link class="user" :to="{name:'infomation'}">
+                    <router-link class="user" :to="{name:'user'}">
                         <img src="../assets/xbx.jpg" alt="">
                     </router-link>
                     <span>&nbsp; wangxiaobao</span>
@@ -90,12 +90,35 @@ export default {
 <style scoped lang = "less">
     .main {
         .content {
+            background-position: center top;
+            background-size: cover;
             width: 60%;
             position: relative;
             left: 10%;
             top: 80px;
-            background-color: #fff;
             padding: 20px;
+            overflow: hidden;
+            border-radius: 5px;
+        }
+        .content::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255,255,255,0.8);
+            z-index: -1;
+            background-image: url('../assets/bg.jpg');
+            background-position: center top;
+            background-size: cover;
+            background-attachment: fixed;
+            -webkit-filter: blur(17px);
+            -moz-filter: blur(17px);
+            -ms-filter: blur(17px);
+            -o-filter: blur(17px);
+            filter: blur(17px);
+            margin: -30px;
         }
         .content-main {
             .topic-list {
@@ -123,10 +146,8 @@ export default {
                     }
                     .cell-day {
                         float: right;
+                        color: #fff;
                     }
-                }
-                .cell:hover {
-                    background-color: #f9f9f9;
                 }
             }
         }
@@ -138,6 +159,8 @@ export default {
             height: 800px;
             .side-person {
                 padding: 10px;
+                padding-bottom: 20px;
+                border-radius: 3px;
                 background-color: #fff;
                 width: 100%;
                 height: 200px;
@@ -156,12 +179,14 @@ export default {
                         img {
                             width: 48px;
                             height: 48px;
+                            border-radius: 4px;
                             vertical-align: middle;
                         }
                     }
                 }
             }
             .scoreboard {
+                border-radius: 3px;
                 padding: 10px;
                 background-color: #fff;
                 margin-top: 50px;
