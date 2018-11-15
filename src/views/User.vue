@@ -69,7 +69,7 @@ export default {
             overflow: hidden;
             border-radius: 5px;
             h2 {
-                color: #f0f0f0;
+                color: #fff;
             }
             .user-info-head {
                 width: 100%;
@@ -115,7 +115,7 @@ export default {
             border-radius: 5px;
             h2 {
                 text-align: left;
-                color: #f0f0f0;
+                color: #fff;
             }
             .cell {
                 width: 100%;

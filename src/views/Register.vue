@@ -45,6 +45,7 @@ export default {
     resetForm: function () {
       this.formLabelAlign.name = ''
       this.formLabelAlign.password = ''
+      this.formLabelAlign.password1 = ''
     },
     submitForm: function (data) {
       console.log(data)

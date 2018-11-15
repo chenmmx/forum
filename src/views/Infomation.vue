@@ -2,37 +2,45 @@
     <div class="infomation">
         <nav-menu></nav-menu>
       <div class="infomation-content">
-        <span>头像上传:</span><el-upload class="img-upload"
-            action="https://jsonplaceholder.typicode.com/posts/"
-            list-type="picture-card"
-            :on-preview="handlePictureCardPreview"
-            :on-remove="handleRemove"
-            :on-success="handleSuccess">
-            <i class="el-icon-plus"></i>
-        </el-upload>
-        <el-dialog :visible.sync="dialogVisible">
-            <img width="100%" :src="dialogImageUrl" alt="">
-        </el-dialog>
-        <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign" class="info">
-          <el-form-item label="用户名">
-            <el-input v-model="formLabelAlign.name"></el-input>
-          </el-form-item>
-          <el-form-item label="个性签名">
-            <el-input v-model="formLabelAlign.region"></el-input>
-          </el-form-item>
-          <el-form-item label="邮箱">
-            <el-input v-model="formLabelAlign.type"></el-input>
-          </el-form-item>
-        </el-form>
-        <h2>密码修改</h2>
-        <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign" class="info">
-          <el-form-item label="当前密码">
-            <el-input v-model="formLabelAlign.name"></el-input>
-          </el-form-item>
-          <el-form-item label="新密码">
-            <el-input v-model="formLabelAlign.region"></el-input>
-          </el-form-item>
-        </el-form>
+        <div class="infomation-content-main__left infomation-content-main">
+          <span>头像上传:</span><el-upload
+            class="avatar-uploader"
+            action="http://localhost:3000/getimg"
+            :show-file-list="false"
+            ref="upload"
+            :auto-upload="false"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload">
+            <img v-if="imageUrl" :src="imageUrl" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogVisible">
+              <img width="100%" :src="dialogImageUrl" alt="">
+          </el-dialog>
+          <el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign" class="info">
+            <el-form-item label="用户名：">
+              <el-input v-model="formLabelAlign.name"></el-input>
+            </el-form-item>
+            <el-form-item label="个性签名：">
+              <el-input v-model="formLabelAlign.region"></el-input>
+            </el-form-item>
+            <el-form-item label="邮箱：">
+              <el-input v-model="formLabelAlign.type"></el-input>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div class="infomation-content-main__right infomation-content-main">
+          <h2>密码修改</h2>
+          <el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign" class="info">
+            <el-form-item label="当前密码：">
+              <el-input v-model="formLabelAlign.password"></el-input>
+            </el-form-item>
+            <el-form-item label="新密码：">
+              <el-input v-model="formLabelAlign.password1"></el-input>
+            </el-form-item>
+          </el-form>
+        </div>
+        <el-button type="primary" @click="submitUpload()">保存更改</el-button>
       </div>
         <div class="side">
           <div class="side-person">
@@ -56,24 +64,47 @@ export default {
     return {
       dialogImageUrl: '',
       dialogVisible: false,
-      labelPosition: 'right',
+      labelPosition: 'top',
+      imageUrl: '',
       formLabelAlign: {
         name: '',
-        region: '',
-        type: ''
+        signature: '',
+        mailbox: '',
+        password: '',
+        password1: ''
       }
     }
   },
   methods: {
-    handleRemove (file, fileList) {
-      console.log(file, fileList)
+    submitUpload: function () {
+      this.$refs.upload.submit()
     },
-    handlePictureCardPreview (file) {
-      this.dialogImageUrl = file.url
-      this.dialogVisible = true
+    handleAvatarSuccess (res, file, fileList) {
+      this.imageUrl = URL.createObjectURL(file.raw)
+      console.log(res)
     },
-    handleSuccess (response, file, fileList) {
-      console.log(file)
+    beforeAvatarUpload (file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      // let formData = new FormData()
+      // formData.append('file', file)
+      // formData.append('name', this.formLabelAlign.name)
+      // formData.append('password', this.formLabelAlign.password)
+      // this.$http.post('http://localhost:3000/getimg', formData)
+      //   .then(res => {
+      //     console.log(res)
+      //   }, error => {
+      //     console.log(error)
+      //   })
+    },
+    uploadSectionFile (param) {
+      console.log(param.file)
     }
   }
 }
@@ -93,19 +124,80 @@ export default {
       left: 10%;
       top: 80px;
       padding: 20px;
-      .info {
-        margin-top: 30px;
-        .el-form-item {
-          width: 30%;
-          .el-form-item__label {
-            color: #fff;
+      height: 650px;
+      .infomation-content-main__left {
+        position: absolute;
+        width: 400px;
+        height: 500px;
+        left: 0;
+      }
+      .infomation-content-main__right {
+        position: absolute;
+        width: 400px;
+        height: 500px;
+        right: 0;
+        top: 100px;
+      }
+      .el-button--primary {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .infomation-content-main {
+        margin-left: 60px;
+        .info {
+          margin-top: 30px;
+          .el-form-item {
+            width: 300px;
+              .el-input {
+                  .el-input__inner {
+                      border-bottom:#f0f0f0 1px solid;
+                      border-left-width:0px;
+                      border-right-width:0px;
+                      border-top-width:0px;
+                      background-color: transparent;
+                      border-radius: 0;
+                      color: #fff;
+                  }
+              }
+              .el-form-item__label {
+                  color: #fff;
+                  font-size: 18px;
+                  text-align: left;
+                  width: 100%;
+                  font-family: 'Microsoft YaHei';
+              }
+              .el-button--success {
+                  margin-right: 20px;
+                  position: absolute;
+                  left: 0;
+              }
           }
         }
-      }
-      .img-upload {
-        width: 400px;
-        position: relative;
-        left: 130px;
+        .avatar-uploader .el-upload {
+          border: 1px dashed #fff;
+          border-radius: 6px;
+          cursor: pointer;
+          position: relative;
+          overflow: hidden;
+        }
+        .avatar-uploader .el-upload:hover {
+          border-color: #409EFF;
+        }
+        .avatar-uploader-icon {
+          font-size: 28px;
+          color: #fff;
+          width: 178px;
+          height: 178px;
+          line-height: 178px;
+          text-align: center;
+        }
+        .avatar {
+          width: 178px;
+          height: 178px;
+          display: block;
+        }
       }
     }
     .infomation-content::after {

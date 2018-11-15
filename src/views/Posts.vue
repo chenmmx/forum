@@ -62,16 +62,40 @@ export default {
             left: 10%;
             width: 60%;
             .posts-content-title {
+                background-position: center top;
+                background-size: cover;
+                overflow: hidden;
+                border-radius: 5px;
+                position: relative;
                 width: 100%;
-                height: 40px;
+                height: 50px;
                 border-radius: 3px;
-                background-color: #fff;
-                padding-bottom: 10px;
                 /* padding-top: px; */
                 margin-bottom: 10px;
                 h3 {
-                    padding-top: 15px;
+                    text-align: left;
+                    padding-left: 30px;
                 }
+            }
+            .posts-content-title::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(255,255,255,0.8);
+                z-index: -1;
+                background-image: url('../assets/bg.jpg');
+                background-position: center top;
+                background-size: cover;
+                background-attachment: fixed;
+                -webkit-filter: blur(17px);
+                -moz-filter: blur(17px);
+                -ms-filter: blur(17px);
+                -o-filter: blur(17px);
+                filter: blur(17px);
+                margin: -30px;
             }
             .md {
                 border-radius: 3px;
