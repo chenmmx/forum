@@ -105,7 +105,7 @@ export default {
             position: absolute;
             top: 165px;
             width: 260px;
-            right: 10%;
+            left: 80%;
             height: 800px;
             .side-person {
                 border-radius: 3px;

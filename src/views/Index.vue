@@ -155,7 +155,7 @@ export default {
             position: absolute;
             top: 148px;
             width: 260px;
-            right: 10%;
+            left: 80%;
             height: 800px;
             .side-person {
                 padding: 10px;

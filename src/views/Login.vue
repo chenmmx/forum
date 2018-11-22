@@ -22,6 +22,14 @@
                     </el-form-item>
                 </el-form>
             </div>
+            <el-alert
+                :title="errorMessage"
+                type="error" center v-show="isError">
+            </el-alert>
+            <el-alert
+                :title="successMessage"
+                type="success" center v-show="isSuccess">
+            </el-alert>
         </div>
     </div>
 </template>
@@ -34,7 +42,11 @@ export default {
       formLabelAlign: {
         name: '',
         password: ''
-      }
+      },
+      errorMessage: '',
+      isError: false,
+      isSuccess: false,
+      successMessage: '登录成功，即将为你跳转！'
     }
   },
   methods: {
@@ -43,7 +55,27 @@ export default {
       this.formLabelAlign.password = ''
     },
     submitForm: function (data) {
-      console.log(data)
+      if (data.name !== '' && data.password !== '') {
+        this.$axios.post('/user/login', data)
+          .then(res => {
+            if (res.data.result === 0) {
+              this.isError = true
+              this.errorMessage = res.data.msg
+            } else {
+              this.isSuccess = true
+              this.$store.state.isLogin = true
+              setTimeout(() => {
+                this.$router.push('/')
+              }, 1000)
+            }
+          })
+          .then(err => {
+            console.log(err)
+          })
+      } else {
+        this.errorMessage = '用户名和密码不能为空！'
+        this.isError = true
+      }
     }
   }
 }

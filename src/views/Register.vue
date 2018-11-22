@@ -14,10 +14,10 @@
                         <el-input v-model="formLabelAlign.name"></el-input>
                     </el-form-item>
                     <el-form-item label="Password：">
-                        <el-input v-model="formLabelAlign.password"></el-input>
+                        <el-input v-model="formLabelAlign.password" type="password"></el-input>
                     </el-form-item>
                     <el-form-item label="Confirm Password：">
-                        <el-input v-model="formLabelAlign.password1"></el-input>
+                        <el-input v-model="formLabelAlign.password1" type="password"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="success" @click="submitForm(formLabelAlign)">Sign Up</el-button>
@@ -25,6 +25,14 @@
                     </el-form-item>
                 </el-form>
             </div>
+              <el-alert
+                :title="errorMessage"
+                type="error" center v-show="isError">
+            </el-alert>
+            <el-alert
+                :title="successMessage"
+                type="success" center v-show="isSuccess">
+            </el-alert>
         </div>
     </div>
 </template>
@@ -38,7 +46,11 @@ export default {
         name: '',
         password: '',
         password1: ''
-      }
+      },
+      isError: false,
+      errorMessage: 'hhh',
+      isSuccess: false,
+      successMessage: '注册成功！即将为你跳转至登录页面...'
     }
   },
   methods: {
@@ -48,7 +60,31 @@ export default {
       this.formLabelAlign.password1 = ''
     },
     submitForm: function (data) {
-      console.log(data)
+      if (data.name !== '' && data.password !== '' && data.password1 !== '') {
+        if (data.password !== data.password1) {
+          this.isError = true
+          this.errorMessage = '两次密码不一致，请确认后重试！！'
+        } else {
+          this.$axios.post('/user/addUser', data)
+            .then(res => {
+              if (res.data.result === 0) {
+                this.isError = true
+                this.errorMessage = res.data.msg
+              } else {
+                this.isSuccess = true
+                setTimeout(() => {
+                  this.$router.push('/login')
+                }, 1000)
+              }
+            })
+            .then(err => {
+              console.log(err)
+            })
+        }
+      } else {
+        this.isError = true
+        this.errorMessage = '请确认所有项已填写！'
+      }
     }
   }
 }

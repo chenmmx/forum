@@ -15,7 +15,8 @@ Vue.use(mavonEditor)
 Vue.config.productionTip = false
 Vue.component('nav-menu', NavMenu)
 Vue.component(mavonEditor)
-Vue.prototype.$http = Axios
+Axios.defaults.baseURL = 'http://192.168.1.237:3000/api'
+Vue.prototype.$axios = Axios
 
 new Vue({
   router,

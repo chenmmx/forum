@@ -1,6 +1,6 @@
 <template>
     <div class="infomation">
-        <nav-menu></nav-menu>
+        <nav-menu :activeIndex='"4"'></nav-menu>
       <div class="infomation-content">
         <div class="infomation-content-main__left infomation-content-main">
           <span>头像上传:</span><el-upload
@@ -224,7 +224,7 @@ export default {
         position: absolute;
         top: 148px;
         width: 260px;
-        right: 10%;
+        left: 80%;
         height: 800px;
         text-align: center;
         .side-person {
