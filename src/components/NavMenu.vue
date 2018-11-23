@@ -10,7 +10,7 @@
   <el-menu-item index="1"><router-link :to="{name: 'home'}">首页</router-link></el-menu-item>
   <el-menu-item index="2" v-show="isLogin"><router-link :to="{name: 'login'}">登录</router-link></el-menu-item>
   <el-menu-item index="3" v-show="isLogin"><router-link :to="{name: 'register'}">注册</router-link></el-menu-item>
-  <el-menu-item index="4"><router-link :to="{name: 'infomation'}">设置</router-link></el-menu-item>
+  <el-menu-item index="4" v-show="!isLogin"><router-link :to="{name: 'infomation'}">设置</router-link></el-menu-item>
   <el-menu-item index="5"><el-input v-model="input" placeholder="搜索"></el-input></el-menu-item>
   <el-menu-item index="6" disabled>第六镜科技知识社区</el-menu-item>
 </el-menu>

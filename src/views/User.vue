@@ -4,9 +4,9 @@
         <div class="user-info">
             <h2>个人信息</h2>
             <div class="user-info-head">
-                <img src="../assets/xbx.jpg" alt="">&nbsp;<span>wangxiaobao</span>
+                <img :src="useravatar" alt="">&nbsp;<span>{{username}}</span>
             </div>
-            <p class="user-info-score">积分：0</p>
+            <p class="user-info-score">积分：{{integral}}</p>
             <p class="user-info-reg">注册时间：2天前</p>
         </div>
         <div class="recently-in recently-create">
@@ -38,10 +38,10 @@
               <h3>个人信息</h3>
               <div class="isLogin">
                   <router-link class="user" :to="{name:'user'}">
-                      <img src="../assets/xbx.jpg" alt="">
+                      <img :src="useravatar" alt="">
                   </router-link>
-                  <span>&nbsp; wangxiaobao</span>
-                  <p>积分:0</p>
+                  <span>&nbsp; {{username}}</span>
+                  <p>积分:{{integral}}</p>
                   <el-button type="success"><router-link :to="{name: 'publish'}">发布话题</router-link></el-button>
               </div>
           </div>
@@ -51,7 +51,23 @@
 
 <script>
 export default {
-
+  data () {
+    return {
+      username: this.$store.state.username,
+      useravatar: '',
+      integral: ''
+    }
+  },
+  created () {
+    this.$axios.post('/api/user/getInfomation', { name: this.username })
+      .then(res => {
+        this.useravatar = res.data[0].useravatar
+        this.integral = res.data[0].integral
+      })
+      .then(err => {
+        console.log(err)
+      })
+  }
 }
 </script>
 

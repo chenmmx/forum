@@ -25,14 +25,18 @@
                     </el-form-item>
                 </el-form>
             </div>
-              <el-alert
+            <transition name="el-fade-in-linear">
+                <el-alert
                 :title="errorMessage"
                 type="error" center v-show="isError">
-            </el-alert>
-            <el-alert
-                :title="successMessage"
-                type="success" center v-show="isSuccess">
-            </el-alert>
+                </el-alert>
+            </transition>
+            <transition name="el-fade-in-linear">
+                <el-alert
+                    :title="successMessage"
+                    type="success" center v-show="isSuccess">
+                </el-alert>
+            </transition>
         </div>
     </div>
 </template>
@@ -65,7 +69,7 @@ export default {
           this.isError = true
           this.errorMessage = '两次密码不一致，请确认后重试！！'
         } else {
-          this.$axios.post('/user/addUser', data)
+          this.$axios.post('/api/user/addUser', data)
             .then(res => {
               if (res.data.result === 0) {
                 this.isError = true

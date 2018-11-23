@@ -5,7 +5,7 @@
         <div class="infomation-content-main__left infomation-content-main">
           <span>头像上传:</span><el-upload
             class="avatar-uploader"
-            action="http://localhost:3000/getimg"
+            action="/"
             :show-file-list="false"
             ref="upload"
             :auto-upload="false"
@@ -19,13 +19,13 @@
           </el-dialog>
           <el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign" class="info">
             <el-form-item label="用户名：">
-              <el-input v-model="formLabelAlign.name"></el-input>
+              <el-input v-model="formLabelAlign.name" :disabled="true"></el-input>
             </el-form-item>
             <el-form-item label="个性签名：">
-              <el-input v-model="formLabelAlign.region"></el-input>
+              <el-input v-model="formLabelAlign.signature"></el-input>
             </el-form-item>
             <el-form-item label="邮箱：">
-              <el-input v-model="formLabelAlign.type"></el-input>
+              <el-input v-model="formLabelAlign.mail"></el-input>
             </el-form-item>
           </el-form>
         </div>
@@ -33,24 +33,32 @@
           <h2>密码修改</h2>
           <el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign" class="info">
             <el-form-item label="当前密码：">
-              <el-input v-model="formLabelAlign.password"></el-input>
+              <el-input v-model="formLabelAlign.password" type="password"></el-input>
             </el-form-item>
             <el-form-item label="新密码：">
-              <el-input v-model="formLabelAlign.password1"></el-input>
+              <el-input v-model="formLabelAlign.password1" type="password"></el-input>
             </el-form-item>
           </el-form>
         </div>
         <el-button type="primary" @click="submitUpload()">保存更改</el-button>
+          <el-alert
+            :title="errorMessage"
+            type="error" v-show="isError" center>
+          </el-alert>
+          <el-alert
+            :title="successMessage"
+            type="success" v-show="isSuccess" center>
+          </el-alert>
       </div>
         <div class="side">
           <div class="side-person">
               <h3>个人信息</h3>
               <div class="isLogin">
                   <router-link class="user" :to="{name:'user'}">
-                      <img src="../assets/xbx.jpg" alt="">
+                      <img :src="formLabelAlign.useravatar" alt="">
                   </router-link>
-                  <span>&nbsp; wangxiaobao</span>
-                  <p>积分:0</p>
+                  <span>&nbsp; {{username}}</span>
+                  <p>积分:{{formLabelAlign.integral}}</p>
                   <el-button type="success"><router-link :to="{name: 'publish'}">发布话题</router-link></el-button>
               </div>
           </div>
@@ -66,18 +74,76 @@ export default {
       dialogVisible: false,
       labelPosition: 'top',
       imageUrl: '',
+      username: this.$store.state.username,
+      imgFile: '',
+      isError: false,
+      errorMessage: '',
+      isSuccess: false,
+      successMessage: '',
       formLabelAlign: {
         name: '',
         signature: '',
-        mailbox: '',
+        mail: '',
         password: '',
-        password1: ''
+        password1: '',
+        useravatar: '',
+        integral: ''
       }
     }
+  },
+  created () {
+    this.$axios.post('/api/user/getInfomation', { name: this.username })
+      .then(res => {
+        this.formLabelAlign.name = res.data[0].username
+        this.formLabelAlign.signature = res.data[0].signature
+        this.formLabelAlign.mail = res.data[0].mail
+        this.formLabelAlign.useravatar = res.data[0].useravatar
+        this.formLabelAlign.integral = res.data[0].integral
+      })
+      .then(err => {
+        console.log(err)
+      })
   },
   methods: {
     submitUpload: function () {
       this.$refs.upload.submit()
+      if (this.formLabelAlign.password !== '' && this.formLabelAlign.password1 !== '') {
+        if (this.formLabelAlign.password !== this.formLabelAlign.password1) {
+          let formData = new FormData()
+          formData.append('file', this.imgFile || '')
+          formData.append('name', this.formLabelAlign.name)
+          formData.append('signature', this.formLabelAlign.signature || '')
+          formData.append('mail', this.formLabelAlign.mail || '')
+          formData.append('password1', this.formLabelAlign.password1)
+          this.$axios.post('/api/user/modifyInfo', formData)
+            .then(res => {
+              if (res.data.result === 1) {
+                this.isSuccess = true
+                this.successMessage = '用户信息修改成功！'
+              }
+            }, error => {
+              console.log(error)
+            })
+        } else {
+          this.isError = true
+          this.errorMessage = '当前密码与旧密码一致，请重新输入！'
+        }
+      } else {
+        let formData = new FormData()
+        formData.append('file', this.imgFile || '')
+        formData.append('name', this.formLabelAlign.name)
+        formData.append('signature', this.formLabelAlign.signature || '')
+        formData.append('mail', this.formLabelAlign.mail || '')
+        this.$axios.post('/api/user/modifyInfo', formData)
+          .then(res => {
+            if (res.data.result === 1) {
+              this.isSuccess = true
+              this.successMessage = '用户信息修改成功！'
+            }
+          }, error => {
+            console.log(error)
+          })
+      }
     },
     handleAvatarSuccess (res, file, fileList) {
       this.imageUrl = URL.createObjectURL(file.raw)
@@ -85,23 +151,17 @@ export default {
     },
     beforeAvatarUpload (file) {
       const isJPG = file.type === 'image/jpeg'
+      const isPNG = file.type === 'image/png'
       const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!')
+      if (!isJPG && !isPNG) {
+        this.$message.error('上传头像图片只能是 JPG或PNG 格式!')
+        return
       }
       if (!isLt2M) {
         this.$message.error('上传头像图片大小不能超过 2MB!')
+        return
       }
-      // let formData = new FormData()
-      // formData.append('file', file)
-      // formData.append('name', this.formLabelAlign.name)
-      // formData.append('password', this.formLabelAlign.password)
-      // this.$http.post('http://localhost:3000/getimg', formData)
-      //   .then(res => {
-      //     console.log(res)
-      //   }, error => {
-      //     console.log(error)
-      //   })
+      this.imgFile = file
     },
     uploadSectionFile (param) {
       console.log(param.file)
@@ -119,7 +179,7 @@ export default {
       background-size: cover;
       overflow: hidden;
       border-radius: 5px;
-      width: 60%;
+      width: 1000px;
       position: relative;
       left: 10%;
       top: 80px;

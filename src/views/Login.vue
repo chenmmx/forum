@@ -14,7 +14,7 @@
                         <el-input v-model="formLabelAlign.name"></el-input>
                     </el-form-item>
                     <el-form-item label="Password：">
-                        <el-input v-model="formLabelAlign.password"></el-input>
+                        <el-input v-model="formLabelAlign.password" type="password"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="success" @click="submitForm(formLabelAlign)">Sign Up</el-button>
@@ -22,14 +22,18 @@
                     </el-form-item>
                 </el-form>
             </div>
-            <el-alert
-                :title="errorMessage"
-                type="error" center v-show="isError">
-            </el-alert>
-            <el-alert
-                :title="successMessage"
-                type="success" center v-show="isSuccess">
-            </el-alert>
+            <transition name="el-fade-in-linear">
+                <el-alert
+                    :title="errorMessage"
+                    type="error" center v-show="isError">
+                </el-alert>
+            </transition>
+            <transition name="el-fade-in-linear">
+                <el-alert
+                    :title="successMessage"
+                    type="success" center v-show="isSuccess">
+                </el-alert>
+            </transition>
         </div>
     </div>
 </template>
@@ -56,7 +60,7 @@ export default {
     },
     submitForm: function (data) {
       if (data.name !== '' && data.password !== '') {
-        this.$axios.post('/user/login', data)
+        this.$axios.post('/api/user/login', data)
           .then(res => {
             if (res.data.result === 0) {
               this.isError = true
@@ -64,6 +68,7 @@ export default {
             } else {
               this.isSuccess = true
               this.$store.state.isLogin = true
+              this.$store.state.username = data.name
               setTimeout(() => {
                 this.$router.push('/')
               }, 1000)

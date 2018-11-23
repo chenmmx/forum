@@ -43,10 +43,10 @@
                 </div>
                 <div class="isLogin" v-show="isShow">
                     <router-link class="user" :to="{name:'user'}">
-                        <img src="../assets/xbx.jpg" alt="">
+                        <img :src="useravatar" alt="">
                     </router-link>
-                    <span>&nbsp; wangxiaobao</span>
-                    <p>积分:0</p>
+                    <span>&nbsp; {{username}}</span>
+                    <p>积分:{{integral}}</p>
                     <el-button type="success"><router-link :to="{name: 'publish'}">发布话题</router-link></el-button>
                 </div>
             </div>
@@ -68,6 +68,9 @@ export default {
       activeName: 'first',
       isShow: this.$store.state.isLogin,
       status: 123,
+      username: this.$store.state.username,
+      integral: '',
+      useravatar: '',
       data: [
         {
           score: 100,
@@ -83,6 +86,16 @@ export default {
         }
       ]
     }
+  },
+  created () {
+    this.$axios.post('/api/user/getInfomation', { name: this.username })
+      .then(res => {
+        this.useravatar = res.data[0].useravatar
+        this.integral = res.data[0].integral
+      })
+      .then(err => {
+        console.log(err)
+      })
   }
 }
 </script>
@@ -139,7 +152,7 @@ export default {
                         /* margin-top: 10px; */
                         padding-top: 10px;
                         text-decoration: none;
-                        color: #42b983;
+                        color: #f0f0f0;
                     }
                     .cell-title:hover {
                         text-decoration: underline;
