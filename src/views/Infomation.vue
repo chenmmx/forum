@@ -74,7 +74,7 @@ export default {
       dialogVisible: false,
       labelPosition: 'top',
       imageUrl: '',
-      username: this.$store.state.username,
+      username: sessionStorage.getItem('username'),
       imgFile: '',
       isError: false,
       errorMessage: '',
@@ -94,13 +94,15 @@ export default {
   created () {
     this.$axios.post('/api/user/getInfomation', { name: this.username })
       .then(res => {
+        this.dialogImageUrl = res.data[0].useravatar
+        this.imageUrl = res.data[0].useravatar
         this.formLabelAlign.name = res.data[0].username
         this.formLabelAlign.signature = res.data[0].signature
         this.formLabelAlign.mail = res.data[0].mail
         this.formLabelAlign.useravatar = res.data[0].useravatar
         this.formLabelAlign.integral = res.data[0].integral
       })
-      .then(err => {
+      .catch(err => {
         console.log(err)
       })
   },
@@ -117,16 +119,24 @@ export default {
           formData.append('password1', this.formLabelAlign.password1)
           this.$axios.post('/api/user/modifyInfo', formData)
             .then(res => {
-              if (res.data.result === 1) {
-                this.isSuccess = true
-                this.successMessage = '用户信息修改成功！'
+              if (res.data.result === 0) {
+                this.$notify({
+                  title: '成功',
+                  message: '用户信息修改成功',
+                  type: 'success'
+                })
+                setTimeout(() => {
+                  this.$router.push('/infomation')
+                }, 300)
               }
             }, error => {
               console.log(error)
             })
         } else {
-          this.isError = true
-          this.errorMessage = '当前密码与旧密码一致，请重新输入！'
+          this.$notify.error({
+            title: '失败',
+            message: '当前密码与旧密码一致，请重新输入！'
+          })
         }
       } else {
         let formData = new FormData()
@@ -136,9 +146,12 @@ export default {
         formData.append('mail', this.formLabelAlign.mail || '')
         this.$axios.post('/api/user/modifyInfo', formData)
           .then(res => {
-            if (res.data.result === 1) {
-              this.isSuccess = true
-              this.successMessage = '用户信息修改成功！'
+            if (res.data.result === 0) {
+              this.$notify({
+                title: '成功',
+                message: '用户信息修改成功',
+                type: 'success'
+              })
             }
           }, error => {
             console.log(error)
@@ -147,7 +160,6 @@ export default {
     },
     handleAvatarSuccess (res, file, fileList) {
       this.imageUrl = URL.createObjectURL(file.raw)
-      console.log(res)
     },
     beforeAvatarUpload (file) {
       const isJPG = file.type === 'image/jpeg'

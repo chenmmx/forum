@@ -8,6 +8,7 @@
             </div>
             <p class="user-info-score">积分：{{integral}}</p>
             <p class="user-info-reg">注册时间：2天前</p>
+            <p class="user-info-signature" style="color: #fff;">个人介绍：{{signature}}</p>
         </div>
         <div class="recently-in recently-create">
             <h2>最近创建的话题</h2>
@@ -53,9 +54,10 @@
 export default {
   data () {
     return {
-      username: this.$store.state.username,
+      username: sessionStorage.getItem('username'),
       useravatar: '',
-      integral: ''
+      integral: '',
+      signature: ''
     }
   },
   created () {
@@ -63,6 +65,7 @@ export default {
       .then(res => {
         this.useravatar = res.data[0].useravatar
         this.integral = res.data[0].integral
+        this.signature = res.data[0].signature
       })
       .then(err => {
         console.log(err)

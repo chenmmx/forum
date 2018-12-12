@@ -22,7 +22,7 @@ export default {
   data () {
     return {
       input: '',
-      isLogin: !this.$store.state.isLogin
+      isLogin: !sessionStorage.getItem('isLogin')
     }
   },
   props: [

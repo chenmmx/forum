@@ -6,7 +6,8 @@ const sqlMap = {
     update: 'update user set '
   },
   posts: {
-    add: ''
+    add: 'insert into posts (username, postContent, posTtitle, postType, createTime) values (?,?,?,?,?)',
+    select_all: 'select * from posts '
   }
 }
 

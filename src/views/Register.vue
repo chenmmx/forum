@@ -25,18 +25,6 @@
                     </el-form-item>
                 </el-form>
             </div>
-            <transition name="el-fade-in-linear">
-                <el-alert
-                :title="errorMessage"
-                type="error" center v-show="isError">
-                </el-alert>
-            </transition>
-            <transition name="el-fade-in-linear">
-                <el-alert
-                    :title="successMessage"
-                    type="success" center v-show="isSuccess">
-                </el-alert>
-            </transition>
         </div>
     </div>
 </template>
@@ -50,11 +38,7 @@ export default {
         name: '',
         password: '',
         password1: ''
-      },
-      isError: false,
-      errorMessage: 'hhh',
-      isSuccess: false,
-      successMessage: '注册成功！即将为你跳转至登录页面...'
+      }
     }
   },
   methods: {
@@ -66,28 +50,39 @@ export default {
     submitForm: function (data) {
       if (data.name !== '' && data.password !== '' && data.password1 !== '') {
         if (data.password !== data.password1) {
-          this.isError = true
-          this.errorMessage = '两次密码不一致，请确认后重试！！'
+          this.$notify.error({
+            title: '错误',
+            message: '两次密码不一致，请重新输入'
+          })
         } else {
           this.$axios.post('/api/user/addUser', data)
             .then(res => {
-              if (res.data.result === 0) {
-                this.isError = true
-                this.errorMessage = res.data.msg
+              if (res.data.result === 1) {
+                this.$notify.error({
+                  title: '错误',
+                  message: res.data.msg
+                })
               } else {
-                this.isSuccess = true
+                this.$notify({
+                  title: '成功',
+                  message: '注册成功，正在为你跳转至登录页...',
+                  type: 'success'
+                })
                 setTimeout(() => {
                   this.$router.push('/login')
                 }, 1000)
               }
             })
-            .then(err => {
+            .catch(err => {
               console.log(err)
             })
         }
       } else {
-        this.isError = true
-        this.errorMessage = '请确认所有项已填写！'
+        this.$notify({
+          title: '警告',
+          message: '请确认所有项已填写',
+          type: 'warning'
+        })
       }
     }
   }

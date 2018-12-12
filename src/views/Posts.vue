@@ -3,7 +3,7 @@
         <nav-menu></nav-menu>
         <div class="posts-content">
             <div class="posts-content-title">
-                <h3>我是标题</h3>
+                <h3>{{title}}</h3>
             </div>
             <mavon-editor
                 class="md"
@@ -36,8 +36,20 @@
 export default {
   data () {
     return {
-      content: ``
+      content: '',
+      title: ''
     }
+  },
+  created () {
+    let postID = this.$route.query.postID
+    this.$axios.get('/api/posts/getPostContent?postID=' + postID)
+      .then(res => {
+        this.content = res.data[0].postContent
+        this.title = res.data[0].postTitle
+      })
+      .catch(err => {
+        console.log(err)
+      })
   },
   computed: {
     prop () {

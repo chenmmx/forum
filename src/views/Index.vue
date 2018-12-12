@@ -2,32 +2,26 @@
     <div class="main">
         <nav-menu :activeIndex='"1"'></nav-menu>
         <div class="content">
-              <el-tabs v-model="activeName">
-                <el-tab-pane label="全部" name="first"></el-tab-pane>
-                <el-tab-pane label="精华" name="second"></el-tab-pane>
-                <el-tab-pane label="分享" name="third"></el-tab-pane>
-                <el-tab-pane label="问答" name="fourth"></el-tab-pane>
+              <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="全部" name="全部"></el-tab-pane>
+                <el-tab-pane label="算法" name="算法"></el-tab-pane>
+                <el-tab-pane label="学术论文" name="学术论文"></el-tab-pane>
+                <el-tab-pane label="Android" name="Android"></el-tab-pane>
+                <el-tab-pane label="前端" name="前端"></el-tab-pane>
+                <el-tab-pane label="后端" name="后端"></el-tab-pane>
             </el-tabs>
             <div class="content-main">
                 <div class="topic-list">
-                    <div class="cell">
+                    <div class="cell" v-for="(item, index) in postsData" :key="index">
                         <router-link :to="{name: 'user'}" class="cell-head">
                             <img src="../assets/xbx.jpg" alt="">
                         </router-link>
-                        <router-link :to="{name: 'posts'}" class="cell-title">
-                            沙发斯蒂芬三个大人供热无法
+                        <router-link :to="{name: 'posts', query: {postID: item.postID}}" class="cell-title">
+                            {{item.postTitle}}
                         </router-link>
-                        <span class="cell-day">3天前</span>
+                        <span class="cell-day">{{item.createTime | dateForm}}</span>
                     </div>
-                    <div class="cell">
-                        <router-link :to="{name: 'user'}" class="cell-head">
-                            <img src="../assets/xbx.jpg" alt="">
-                        </router-link>
-                        <router-link :to="{name: 'posts',query: {id : status}}" class="cell-title">
-                            沙发斯蒂芬三个大人供热无法
-                        </router-link>
-                        <span class="cell-day">3天前</span>
-                    </div>
+                    <el-pagination background layout="prev, pager, next" :total="1000" style="margin-top: 30px;"></el-pagination>
                 </div>
             </div>
         </div>
@@ -47,14 +41,15 @@
                     </router-link>
                     <span>&nbsp; {{username}}</span>
                     <p>积分:{{integral}}</p>
+                    <p>个人介绍：{{signature}}</p>
                     <el-button type="success"><router-link :to="{name: 'publish'}">发布话题</router-link></el-button>
                 </div>
             </div>
             <div class="scoreboard">
                 <h3>积分榜</h3>
-                <el-table :data="data">
-                    <el-table-column prop="score" label="积分" align='center'></el-table-column>
-                    <el-table-column prop="name" label="用户" align='center'></el-table-column>
+                <el-table :data="scoreboardData">
+                    <el-table-column prop="integral" label="积分" align='center'></el-table-column>
+                    <el-table-column prop="username" label="用户" align='center'></el-table-column>
                 </el-table>
             </div>
         </div>
@@ -62,40 +57,63 @@
 </template>
 
 <script>
+import moment from 'moment'
 export default {
   data () {
     return {
-      activeName: 'first',
-      isShow: this.$store.state.isLogin,
+      activeName: '全部',
+      isShow: false,
       status: 123,
-      username: this.$store.state.username,
+      username: sessionStorage.getItem('username'),
       integral: '',
       useravatar: '',
-      data: [
-        {
-          score: 100,
-          name: '张飞'
-        },
-        {
-          score: 120,
-          name: '张三'
-        },
-        {
-          score: 130,
-          name: '李四'
-        }
-      ]
+      signature: '',
+      scoreboardData: [],
+      postsData: [],
+      publishDay: ''
     }
   },
   created () {
-    this.$axios.post('/api/user/getInfomation', { name: this.username })
+    if (this.username) {
+      this.isShow = sessionStorage.getItem('isLogin')
+      this.$axios.post('/api/user/getInfomation', { name: this.username })
+        .then(res => {
+          this.useravatar = res.data[0].useravatar
+          this.integral = res.data[0].integral
+          this.signature = res.data[0].signature
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+    this.$axios.get('/api/user/getScoreboard')
       .then(res => {
-        this.useravatar = res.data[0].useravatar
-        this.integral = res.data[0].integral
+        this.scoreboardData = res.data
       })
-      .then(err => {
+      .catch(err => {
         console.log(err)
       })
+    this.$axios.get('/api/posts/getPosts?postType=全部')
+      .then(res => {
+        this.postsData = res.data
+        let date = new Date()
+        console.log(date)
+        console.log(date - this.postsData[0].createTime)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  },
+  filters: {
+    dateForm: function (el) {
+      return moment(el).format('YYYY-MM-DD')
+    }
+  },
+  methods: {
+    async handleClick (tab, event) {
+      let res = await this.$axios.get('/api/posts/getPosts?postType=' + tab.name)
+      this.postsData = res.data
+    }
   }
 }
 </script>
@@ -176,7 +194,7 @@ export default {
                 border-radius: 3px;
                 background-color: #fff;
                 width: 100%;
-                height: 200px;
+                height: 300px;
                 .notLogin {
                     a {
                         text-decoration: none;

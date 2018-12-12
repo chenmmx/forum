@@ -22,18 +22,6 @@
                     </el-form-item>
                 </el-form>
             </div>
-            <transition name="el-fade-in-linear">
-                <el-alert
-                    :title="errorMessage"
-                    type="error" center v-show="isError">
-                </el-alert>
-            </transition>
-            <transition name="el-fade-in-linear">
-                <el-alert
-                    :title="successMessage"
-                    type="success" center v-show="isSuccess">
-                </el-alert>
-            </transition>
         </div>
     </div>
 </template>
@@ -46,11 +34,7 @@ export default {
       formLabelAlign: {
         name: '',
         password: ''
-      },
-      errorMessage: '',
-      isError: false,
-      isSuccess: false,
-      successMessage: '登录成功，即将为你跳转！'
+      }
     }
   },
   methods: {
@@ -62,24 +46,35 @@ export default {
       if (data.name !== '' && data.password !== '') {
         this.$axios.post('/api/user/login', data)
           .then(res => {
-            if (res.data.result === 0) {
-              this.isError = true
-              this.errorMessage = res.data.msg
+            if (res.data.result === 1) {
+              this.$notify.error({
+                title: '失败',
+                message: '请确认你的用户名或密码正确'
+              })
             } else {
-              this.isSuccess = true
-              this.$store.state.isLogin = true
-              this.$store.state.username = data.name
+              this.$notify({
+                title: '成功',
+                message: '登录成功，正在为你跳转至首页...',
+                type: 'success'
+              })
+              sessionStorage.setItem('isLogin', true)
+              sessionStorage.setItem('username', data.name)
+              this.$store.state.isLogin = sessionStorage.getItem('isLogin')
+              this.$store.state.username = sessionStorage.getItem('username')
               setTimeout(() => {
                 this.$router.push('/')
               }, 1000)
             }
           })
-          .then(err => {
+          .catch(err => {
             console.log(err)
           })
       } else {
-        this.errorMessage = '用户名和密码不能为空！'
-        this.isError = true
+        this.$notify({
+          title: '失败',
+          message: '请确认你的用户名或密码已填写',
+          type: 'warning'
+        })
       }
     }
   }

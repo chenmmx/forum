@@ -43,11 +43,11 @@ router.post('/addUser', (req, res) => {
             if (err) {
               console.log(err)
             } else {
-              return res.json({ result: 1, msg: '用户创建成功！' })
+              return res.json({ result: 0, msg: '用户创建成功！' })
             }
           })
       } else {
-        return res.json({ result: 0, msg: '当前账户已存在!' })
+        return res.json({ result: 1, msg: '当前账户已存在!' })
       }
     }
   })
@@ -62,12 +62,12 @@ router.post('/login', (req, res) => {
       console.log(err)
     } else {
       if (result == '') {
-        return res.json({ result: 0, msg: '当前用户不存在！' })
+        return res.json({ result: 1, msg: '当前用户不存在！' })
       } else {
         if (params.password === result[0].password) {
-          return res.json({ result: 1, msg: '登录成功！' })
+          return res.json({ result: 0, msg: '登录成功！' })
         } else {
-          return res.json({ result: 0, msg: '密码错误！' })
+          return res.json({ result: 1, msg: '密码错误！' })
         }
       }
     }
@@ -97,7 +97,7 @@ router.post('/modifyInfo', upload.single('file'), (req, res) => {
         if (err) {
           console.log(err)
         } else {
-          return res.json({ result: 1, msg: '修改成功！' })
+          return res.json({ result: 0, msg: '修改成功！' })
         }
       })
   } else {
@@ -106,10 +106,21 @@ router.post('/modifyInfo', upload.single('file'), (req, res) => {
         if (err) {
           console.log(err)
         } else {
-          return res.json({ result: 1, msg: '修改成功！' })
+          return res.json({ result: 0, msg: '修改成功！' })
         }
       })
   }
+})
+
+router.get('/getScoreboard', (req, res) => {
+  let sql = $sql.user.select_all
+  conn.query(sql + 'ORDER BY integral', (err, result) => {
+    if (err) {
+      console.log(err)
+    } else {
+      return res.json(result)
+    }
+  })
 })
 
 module.exports = router
