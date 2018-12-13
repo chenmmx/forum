@@ -61,6 +61,14 @@ export default {
               sessionStorage.setItem('username', data.name)
               this.$store.state.isLogin = sessionStorage.getItem('isLogin')
               this.$store.state.username = sessionStorage.getItem('username')
+              this.$axios.post('/api/user/getInfomation', { name: data.name })
+                .then(res => {
+                  console.log(res.data)
+                  sessionStorage.setItem('user_id', res.data[0].id)
+                })
+                .catch(err => {
+                  console.log(err)
+                })
               setTimeout(() => {
                 this.$router.push('/')
               }, 1000)
@@ -100,8 +108,8 @@ export default {
                 left: 0;
                 padding: 20px;
                 top: 240px;
+                color: #f0f0f0;
                 h3 {
-                    color: #f0f0f0;
                     font-weight: 300;
                 }
             }

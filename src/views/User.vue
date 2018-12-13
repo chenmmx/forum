@@ -7,38 +7,44 @@
                 <img :src="useravatar" alt="">&nbsp;<span>{{username}}</span>
             </div>
             <p class="user-info-score">积分：{{integral}}</p>
-            <p class="user-info-reg">注册时间：2天前</p>
+            <p class="user-info-reg">注册时间：{{createTime | dateForm}}</p>
             <p class="user-info-signature" style="color: #fff;">个人介绍：{{signature}}</p>
         </div>
         <div class="recently-in recently-create">
             <h2>最近创建的话题</h2>
-            <div class="cell">
+            <div class="cell" v-for="(item, index) in recentCreateList" :key="index">
                 <router-link :to="{name: 'user'}" class="cell-head">
-                    <img src="../assets/xbx.jpg" alt="">
+                    <img :src="item.useravatar" alt="">
                 </router-link>&nbsp;&nbsp;
-                <router-link :to="{name: 'posts'}" class="cell-title">
-                    沙发斯蒂芬三个大人供热无法
+                <router-link :to="{name: 'posts', query: {postID: item.postID}}" class="cell-title">
+                    {{item.postTitle}}
                 </router-link>
-                <span class="cell-day">3天前</span>
+                <span class="cell-day">{{item.createTime | dateForm}}</span>
             </div>
+            <router-link :to="{name: 'posts'}" class="cell-title">
+                查看更多>>
+            </router-link>
         </div>
         <div class="recently-in recently-join">
             <h2>最近参与的话题</h2>
-            <div class="cell">
+            <div class="cell" v-for="(item, index) in recentCreateList" :key="index">
                 <router-link :to="{name: 'user'}" class="cell-head">
-                    <img src="../assets/xbx.jpg" alt="">
+                    <img :src="item.useravatar" alt="">
                 </router-link>&nbsp;&nbsp;
-                <router-link :to="{name: 'posts'}" class="cell-title">
-                    沙发斯蒂芬三个大人供热无法
+                <router-link :to="{name: 'posts', query: {postID: item.postID}}" class="cell-title">
+                    {{item.postTitle}}
                 </router-link>
-                <span class="cell-day">3天前</span>
+                <span class="cell-day">{{item.createTime | dateForm}}</span>
             </div>
+            <router-link :to="{name: 'posts'}" class="cell-title">
+                查看更多>>
+            </router-link>
         </div>
         <div class="side">
           <div class="side-person">
               <h3>个人信息</h3>
               <div class="isLogin">
-                  <router-link class="user" :to="{name:'user'}">
+                  <router-link class="user" :to="{name:'user', query: {userID: userID}}">
                       <img :src="useravatar" alt="">
                   </router-link>
                   <span>&nbsp; {{username}}</span>
@@ -51,25 +57,44 @@
 </template>
 
 <script>
+import moment from 'moment'
 export default {
   data () {
     return {
       username: sessionStorage.getItem('username'),
       useravatar: '',
       integral: '',
-      signature: ''
+      signature: '',
+      createTime: '',
+      userID: sessionStorage.getItem('user_id'),
+      recentCreateList: []
     }
   },
   created () {
-    this.$axios.post('/api/user/getInfomation', { name: this.username })
+    let userID = this.$route.query.userID
+    this.$axios.post('/api/user/getInfomationById', { userID: userID })
       .then(res => {
         this.useravatar = res.data[0].useravatar
         this.integral = res.data[0].integral
         this.signature = res.data[0].signature
+        this.createTime = res.data[0].create_time
       })
       .then(err => {
         console.log(err)
       })
+    this.$axios.get('/api/posts/recentCreatePosts?userID=' + userID)
+      .then(res => {
+        this.recentCreateList = res.data
+        console.log(res.data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  },
+  filters: {
+    dateForm: function (el) {
+      return moment(el).format('YYYY-MM-DD')
+    }
   }
 }
 </script>
@@ -132,6 +157,10 @@ export default {
             padding: 20px;
             overflow: hidden;
             border-radius: 5px;
+            a {
+                text-decoration: none;
+                color: #f0f0f0;
+            }
             h2 {
                 text-align: left;
                 color: #fff;

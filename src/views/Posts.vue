@@ -19,13 +19,13 @@
             <div class="side-person">
                 <h3>作者信息</h3>
                 <div class="isLogin">
-                    <router-link class="user" :to="{name:'user'}">
-                        <img src="../assets/xbx.jpg" alt="">
+                    <router-link class="user" :to="{name:'user', query: {userID: data.user_id}}">
+                        <img :src="data.useravatar" alt="">
                     </router-link>
-                    <span>&nbsp; wangxiaobao</span>
-                    <p>积分:0</p>
+                    <span>&nbsp; {{data.username}}</span>
+                    <p>积分:{{data.integral}}</p>
                     <h4>个人介绍</h4>
-                    <p>哈啊哈。去玩儿体育和国际两个婢女落花流水电饭锅</p>
+                    <p>{{data.signature}}</p>
                 </div>
             </div>
         </div>
@@ -37,7 +37,8 @@ export default {
   data () {
     return {
       content: '',
-      title: ''
+      title: '',
+      data: []
     }
   },
   created () {
@@ -46,6 +47,7 @@ export default {
       .then(res => {
         this.content = res.data[0].postContent
         this.title = res.data[0].postTitle
+        this.data = res.data[0]
       })
       .catch(err => {
         console.log(err)
@@ -80,13 +82,14 @@ export default {
                 border-radius: 5px;
                 position: relative;
                 width: 100%;
-                height: 50px;
+                height: 75px;
                 border-radius: 3px;
                 /* padding-top: px; */
-                margin-bottom: 10px;
+                margin-bottom: 13px;
                 h3 {
-                    text-align: left;
-                    padding-left: 30px;
+                    text-align: center;
+                    color: #f0f0f0;
+                    font-size: 26px;
                 }
             }
             .posts-content-title::after {

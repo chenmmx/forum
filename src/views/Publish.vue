@@ -56,7 +56,8 @@ export default {
           postContent: this.content,
           postType: this.value,
           postTitle: this.title,
-          username: sessionStorage.getItem('username')
+          username: sessionStorage.getItem('username'),
+          userID: sessionStorage.getItem('user_id')
         })
           .then(res => {
             if (res.data.result === 0) {

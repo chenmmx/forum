@@ -108,8 +108,8 @@ export default {
                 left: 0;
                 padding: 20px;
                 top: 240px;
+                color: #f0f0f0;
                 h3 {
-                    color: #f0f0f0;
                     font-weight: 300;
                 }
             }

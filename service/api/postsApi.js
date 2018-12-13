@@ -11,7 +11,7 @@ conn.connect()
 router.post('/addPosts', (req, res) => {
   let parms = req.body
   let sql = $sql.posts.add
-  conn.query(sql, [parms.username, parms.postContent, parms.postTitle, parms.postType, new Date()], (err, result) => {
+  conn.query(sql, [parms.username, parms.postContent, parms.postTitle, parms.postType, new Date(), parms.userID], (err, result) => {
     if (err) {
       console.log(err)
     } else {
@@ -53,4 +53,17 @@ router.get('/getPostContent', (req, res) => {
     }
   })
 })
+
+router.get('/recentCreatePosts', (req, res) => {
+  let parms = req.query
+  let sql = $sql.posts.select_all
+  conn.query(sql + `where user_id = ${parms.userID} ORDER BY createTime desc limit 0,3`, (err, result) => {
+    if (err) {
+      console.log(err)
+    } else {
+      res.json(result)
+    }
+  })
+})
+
 module.exports = router

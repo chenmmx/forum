@@ -13,8 +13,8 @@
             <div class="content-main">
                 <div class="topic-list">
                     <div class="cell" v-for="(item, index) in postsData" :key="index">
-                        <router-link :to="{name: 'user'}" class="cell-head">
-                            <img src="../assets/xbx.jpg" alt="">
+                        <router-link :to="{name: 'user', query: {userID: item.id}}" class="cell-head">
+                            <img :src="item.useravatar" alt="">
                         </router-link>
                         <router-link :to="{name: 'posts', query: {postID: item.postID}}" class="cell-title">
                             {{item.postTitle}}
@@ -36,7 +36,7 @@
                     </p>
                 </div>
                 <div class="isLogin" v-show="isShow">
-                    <router-link class="user" :to="{name:'user'}">
+                    <router-link class="user" :to="{name:'user', query: {userID: userID}}">
                         <img :src="useravatar" alt="">
                     </router-link>
                     <span>&nbsp; {{username}}</span>
@@ -70,7 +70,8 @@ export default {
       signature: '',
       scoreboardData: [],
       postsData: [],
-      publishDay: ''
+      publishDay: '',
+      userID: sessionStorage.getItem('user_id')
     }
   },
   created () {
@@ -96,9 +97,7 @@ export default {
     this.$axios.get('/api/posts/getPosts?postType=全部')
       .then(res => {
         this.postsData = res.data
-        let date = new Date()
-        console.log(date)
-        console.log(date - this.postsData[0].createTime)
+        console.log(res)
       })
       .catch(err => {
         console.log(err)

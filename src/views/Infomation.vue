@@ -5,18 +5,14 @@
         <div class="infomation-content-main__left infomation-content-main">
           <span>头像上传:</span><el-upload
             class="avatar-uploader"
-            action="/"
+            action="/api/user/modifyInfo"
             :show-file-list="false"
             ref="upload"
             :auto-upload="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload">
+            :on-change="onUploadChange">
             <img v-if="imageUrl" :src="imageUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
-          <el-dialog :visible.sync="dialogVisible">
-              <img width="100%" :src="dialogImageUrl" alt="">
-          </el-dialog>
           <el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign" class="info">
             <el-form-item label="用户名：">
               <el-input v-model="formLabelAlign.name" :disabled="true"></el-input>
@@ -54,7 +50,7 @@
           <div class="side-person">
               <h3>个人信息</h3>
               <div class="isLogin">
-                  <router-link class="user" :to="{name:'user'}">
+                  <router-link class="user" :to="{name:'user', query: {userID: userID}}">
                       <img :src="formLabelAlign.useravatar" alt="">
                   </router-link>
                   <span>&nbsp; {{username}}</span>
@@ -67,19 +63,15 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 export default {
   data () {
     return {
-      dialogImageUrl: '',
-      dialogVisible: false,
       labelPosition: 'top',
       imageUrl: '',
       username: sessionStorage.getItem('username'),
       imgFile: '',
-      isError: false,
-      errorMessage: '',
-      isSuccess: false,
-      successMessage: '',
+      userID: sessionStorage.getItem('user_id'),
       formLabelAlign: {
         name: '',
         signature: '',
@@ -94,7 +86,6 @@ export default {
   created () {
     this.$axios.post('/api/user/getInfomation', { name: this.username })
       .then(res => {
-        this.dialogImageUrl = res.data[0].useravatar
         this.imageUrl = res.data[0].useravatar
         this.formLabelAlign.name = res.data[0].username
         this.formLabelAlign.signature = res.data[0].signature
@@ -106,13 +97,19 @@ export default {
         console.log(err)
       })
   },
+  computed: {
+    ...mapGetters(['headPortrait'])
+  },
   methods: {
+    ...mapActions(['SET_USER_HEAD']),
     submitUpload: function () {
       this.$refs.upload.submit()
       if (this.formLabelAlign.password !== '' && this.formLabelAlign.password1 !== '') {
         if (this.formLabelAlign.password !== this.formLabelAlign.password1) {
           let formData = new FormData()
-          formData.append('file', this.imgFile || '')
+          if (this.imgFile !== '') {
+            formData.append('file', this.imgFile)
+          }
           formData.append('name', this.formLabelAlign.name)
           formData.append('signature', this.formLabelAlign.signature || '')
           formData.append('mail', this.formLabelAlign.mail || '')
@@ -120,14 +117,14 @@ export default {
           this.$axios.post('/api/user/modifyInfo', formData)
             .then(res => {
               if (res.data.result === 0) {
+                setTimeout(() => {
+                  this.$router.go(0)
+                }, 500)
                 this.$notify({
                   title: '成功',
                   message: '用户信息修改成功',
                   type: 'success'
                 })
-                setTimeout(() => {
-                  this.$router.push('/infomation')
-                }, 300)
               }
             }, error => {
               console.log(error)
@@ -140,13 +137,18 @@ export default {
         }
       } else {
         let formData = new FormData()
-        formData.append('file', this.imgFile || '')
+        if (this.imgFile !== '') {
+          formData.append('file', this.imgFile)
+        }
         formData.append('name', this.formLabelAlign.name)
         formData.append('signature', this.formLabelAlign.signature || '')
         formData.append('mail', this.formLabelAlign.mail || '')
         this.$axios.post('/api/user/modifyInfo', formData)
           .then(res => {
             if (res.data.result === 0) {
+              setTimeout(() => {
+                this.$router.go(0)
+              }, 500)
               this.$notify({
                 title: '成功',
                 message: '用户信息修改成功',
@@ -158,13 +160,10 @@ export default {
           })
       }
     },
-    handleAvatarSuccess (res, file, fileList) {
-      this.imageUrl = URL.createObjectURL(file.raw)
-    },
-    beforeAvatarUpload (file) {
-      const isJPG = file.type === 'image/jpeg'
-      const isPNG = file.type === 'image/png'
-      const isLt2M = file.size / 1024 / 1024 < 2
+    onUploadChange (file) {
+      const isJPG = file.raw.type === 'image/jpeg'
+      const isPNG = file.raw.type === 'image/png'
+      const isLt2M = file.raw.size / 1024 / 1024 < 2
       if (!isJPG && !isPNG) {
         this.$message.error('上传头像图片只能是 JPG或PNG 格式!')
         return
@@ -173,16 +172,18 @@ export default {
         this.$message.error('上传头像图片大小不能超过 2MB!')
         return
       }
-      this.imgFile = file
-    },
-    uploadSectionFile (param) {
-      console.log(param.file)
+      this.imgFile = file.raw
+      this.SET_USER_HEAD(file.raw)
+      this.imageUrl = URL.createObjectURL(file.raw)
     }
   }
 }
 </script>
 
 <style lang = "less">
+.el-tabs__item {
+  color: #fff;
+}
   .infomation {
     text-align: left;
     .infomation-content {
