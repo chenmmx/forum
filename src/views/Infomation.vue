@@ -5,7 +5,7 @@
         <div class="infomation-content-main__left infomation-content-main">
           <span>头像上传:</span><el-upload
             class="avatar-uploader"
-            action="/api/user/modifyInfo"
+            action="/"
             :show-file-list="false"
             ref="upload"
             :auto-upload="false"
@@ -37,14 +37,6 @@
           </el-form>
         </div>
         <el-button type="primary" @click="submitUpload()">保存更改</el-button>
-          <el-alert
-            :title="errorMessage"
-            type="error" v-show="isError" center>
-          </el-alert>
-          <el-alert
-            :title="successMessage"
-            type="success" v-show="isSuccess" center>
-          </el-alert>
       </div>
         <div class="side">
           <div class="side-person">

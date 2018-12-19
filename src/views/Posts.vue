@@ -15,6 +15,21 @@
                 :scrollStyle="prop.scrollStyle"
             ></mavon-editor>
         </div>
+        <div class="user-comment-reply">
+            <h2>用户评论区：</h2>
+            <div class="cell" v-for="item of commentData" :key="item.commentID">
+                <router-link :to="{name: 'user', query: {userID: item.id}}" class="cell-head">
+                    <img :src="item.useravatar" alt="">
+                </router-link>
+                <span>{{item.commentContent}}</span>
+                <span class="cell-day">{{item.createTime | dateForm}}</span>
+            </div>
+            <el-pagination background layout="prev, pager, next" :total="1000" style="margin-top: 30px;"></el-pagination>
+        </div>
+        <div class="user-comment-send">
+            <mavon-editor v-model="content1" :subfield = false :defaultOpen= manner></mavon-editor>
+            <el-button type="primary" @click="sendContent()" style="margin-top: 15px;margin-bottom:30px;">发表评论</el-button>
+        </div>
         <div class="side">
             <div class="side-person">
                 <h3>作者信息</h3>
@@ -33,12 +48,16 @@
 </template>
 
 <script>
+import moment from 'moment'
 export default {
   data () {
     return {
       content: '',
       title: '',
-      data: []
+      data: [],
+      content1: '',
+      manner: 'edit',
+      commentData: []
     }
   },
   created () {
@@ -48,6 +67,13 @@ export default {
         this.content = res.data[0].postContent
         this.title = res.data[0].postTitle
         this.data = res.data[0]
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    this.$axios.get('/api/comment/getCommentByPostId?postID=' + postID)
+      .then(res => {
+        this.commentData = res.data
       })
       .catch(err => {
         console.log(err)
@@ -63,6 +89,58 @@ export default {
         scrollStyle: true
       }
       return data
+    }
+  },
+  filters: {
+    dateForm: function (el) {
+      return moment(el).format('YYYY-MM-DD')
+    }
+  },
+  methods: {
+    async sendContent () {
+      if (sessionStorage.getItem('user_id')) {
+        if (this.content1 === '') {
+          this.$notify({
+            title: '警告',
+            message: '请输入评论内容',
+            type: 'warning'
+          })
+        } else {
+          let commnetData = {
+            userID: sessionStorage.getItem('user_id'),
+            postID: this.$route.query.postID,
+            commentContent: this.content1
+          }
+          let res = await this.$axios.post('/api/comment/addComment', commnetData)
+          this.$notify({
+            title: '发表成功',
+            message: res.data.msg,
+            type: 'success'
+          })
+          this.$axios.get('/api/comment/getCommentByPostId?postID=' + this.$route.query.postID)
+            .then(res => {
+              this.commentData = res.data
+            })
+            .catch(err => {
+              console.log(err)
+            })
+          this.setRecentPostsId()
+        }
+      } else {
+        this.$notify({
+          title: '警告',
+          message: '请登录后再进行评论',
+          type: 'warning'
+        })
+      }
+    },
+    async setRecentPostsId () {
+      let recentData = {
+        userID: sessionStorage.getItem('user_id'),
+        postID: this.$route.query.postID
+      }
+      let res = await this.$axios.post('/api/posts/setRecentPostsId', recentData)
+      console.log(res)
     }
   }
 }
@@ -115,6 +193,48 @@ export default {
             .md {
                 border-radius: 3px;
             }
+        }
+        .user-comment-reply {
+            top: 100px;
+            position: relative;
+            left: 10%;
+            width: 60%;
+            border-radius: 10px;
+            h2 {
+                color: #fff;
+            }
+            .cell {
+                width: 100%;
+                /* height: 38px; */
+                border-bottom: 1px solid #f0f0f0;
+                /* padding: 10px 5px 0 5px; */
+                padding-top: 20px;
+                padding-bottom: 20px;
+                background-color: #fff;
+                .cell-head {
+                    float: left;
+                    margin-left: 10px;
+                    img {
+                        width: 30px;
+                        height: 30px;
+                        border-radius: 3px;
+                    }
+                }
+                span {
+                    text-align: left;
+                }
+                .cell-day {
+                    margin-right: 20px;
+                    float: right;
+                    color: #000;
+                }
+            }
+        }
+        .user-comment-send {
+            top: 150px;
+            position: relative;
+            left: 10%;
+            width: 60%;
         }
         .side {
             position: absolute;

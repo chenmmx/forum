@@ -97,7 +97,6 @@ export default {
     this.$axios.get('/api/posts/getPosts?postType=全部')
       .then(res => {
         this.postsData = res.data
-        console.log(res)
       })
       .catch(err => {
         console.log(err)

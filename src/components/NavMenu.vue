@@ -12,12 +12,14 @@
   <el-menu-item index="3" v-show="isLogin"><router-link :to="{name: 'register'}">注册</router-link></el-menu-item>
   <el-menu-item index="4" v-show="!isLogin"><router-link :to="{name: 'infomation'}">设置</router-link></el-menu-item>
   <el-menu-item index="5"><el-input v-model="input" placeholder="搜索"></el-input></el-menu-item>
-  <el-menu-item index="6" disabled>第六镜科技知识社区</el-menu-item>
+  <el-menu-item index="6"><el-button type="primary" @click="onSearch()">搜索</el-button></el-menu-item>
+  <el-menu-item index="7" disabled>第六镜科技知识社区</el-menu-item>
 </el-menu>
     </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 export default {
   data () {
     return {
@@ -27,7 +29,16 @@ export default {
   },
   props: [
     'activeIndex'
-  ]
+  ],
+  computed: {
+    ...mapGetters(['searchList'])
+  },
+  methods: {
+    ...mapActions(['GET_SEARCH_LIST']),
+    onSearch () {
+      this.GET_SEARCH_LIST({ keyword: this.input })
+    }
+  }
 }
 </script>
 

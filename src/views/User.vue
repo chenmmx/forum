@@ -27,14 +27,14 @@
         </div>
         <div class="recently-in recently-join">
             <h2>最近参与的话题</h2>
-            <div class="cell" v-for="(item, index) in recentCreateList" :key="index">
+            <div class="cell" v-for="(item, index) in recentJoinList" :key="index">
                 <router-link :to="{name: 'user'}" class="cell-head">
                     <img :src="item.useravatar" alt="">
                 </router-link>&nbsp;&nbsp;
                 <router-link :to="{name: 'posts', query: {postID: item.postID}}" class="cell-title">
                     {{item.postTitle}}
                 </router-link>
-                <span class="cell-day">{{item.createTime | dateForm}}</span>
+                <span class="cell-day">{{item.createTime | dateForm}}创建的话题</span>
             </div>
             <router-link :to="{name: 'posts'}" class="cell-title">
                 查看更多>>
@@ -67,7 +67,8 @@ export default {
       signature: '',
       createTime: '',
       userID: sessionStorage.getItem('user_id'),
-      recentCreateList: []
+      recentCreateList: [],
+      recentJoinList: []
     }
   },
   created () {
@@ -85,7 +86,17 @@ export default {
     this.$axios.get('/api/posts/recentCreatePosts?userID=' + userID)
       .then(res => {
         this.recentCreateList = res.data
-        console.log(res.data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    this.$axios.get('/api/posts/getRecentPostsId?userID=' + userID)
+      .then(res => {
+        if (res.data.result === 1) {
+          console.log('暂无参与话题')
+        } else {
+          this.recentJoinList = res.data
+        }
       })
       .catch(err => {
         console.log(err)

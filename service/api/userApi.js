@@ -31,7 +31,7 @@ router.post('/addUser', (req, res) => {
     //   console.log(err)
     } else {
       if (result == '') {
-        conn.query(sql, [params.name, params.password, '', '', '暂无个性签名', 0],
+        conn.query(sql, [params.name, params.password, '', '', '暂无个性签名', 0, new Date()],
           (err, result) => {
             if (err) {
               console.log(err)
